@@ -1,0 +1,16 @@
+{
+    "actions": {
+        "build": {
+            "enabled": true,
+            "script": "deno task build"
+        },
+        "clean": {
+            "enabled": true,
+            "script": "biome check --write ."
+        },
+        "run": {
+            "enabled": true,
+            "script": "deno task start"
+        }
+    }
+}
