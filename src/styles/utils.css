@@ -1,0 +1,16 @@
+.flex {
+    display: flex;
+    align-items: center;
+    gap: var(--size-relative-2);
+}
+.grow {
+    flex-grow: 1;
+    min-width: 1px;
+    min-height: 1px;
+}
+:is(.visually-hidden, .sr-only) {
+    block-size: 0;
+    inline-size: 0;
+    overflow: hidden;
+    display: block;
+}

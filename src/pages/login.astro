@@ -1,0 +1,61 @@
+---
+import { actions, isInputError } from "astro:actions";
+import Layout from "../layouts/Layout.astro";
+
+if (Astro.locals.session !== null && Astro.locals.user !== null) {
+    return Astro.redirect("/");
+}
+
+const result = Astro.getActionResult(actions.login);
+const inputErrors = isInputError(result?.error) ? result.error.fields : {};
+---
+
+<Layout title="Sign in">
+    <main>
+        <h1>Sign in</h1>
+
+        <form method="POST" action={"/" + actions.login}>
+            <label for="form-login.username">Username</label>
+            <input
+                transition:persist
+                type="text"
+                name="username"
+                autocomplete="username"
+                required
+            />
+            {
+                inputErrors.username && (
+                    <p id="error">{inputErrors.username.join(",")}</p>
+                )
+            }
+
+            <label for="form-login.password">Password</label>
+            <input
+                transition:persist
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            />
+            {
+                inputErrors.password && (
+                    <p id="error">{inputErrors.password.join(",")}</p>
+                )
+            }
+
+            <button type="submit">Continue</button>
+
+
+            {
+                result?.error && (
+                    <p id="form-login.error">
+                        Unable to sign up. Please try again later.
+                    </p>
+                )
+            }
+        </form>
+        
+        <a href="/signup">Create an account</a>
+        <a href="/forgot-password">Forgot password?</a>
+    </main>
+</Layout>

@@ -1,0 +1,7 @@
+---
+import { actions, isInputError } from "astro:actions";
+---
+
+<form method="POST" action={'/login' + actions.logout}>
+	<button type="submit">Sign out</button>
+</form>

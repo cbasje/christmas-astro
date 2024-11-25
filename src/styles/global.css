@@ -1,0 +1,46 @@
+@import "open-props/fonts" layer(fonts);
+@import "./fonts.css" layer(fonts);
+
+@import "open-props/style" layer(reset);
+@import "open-props/normalize" layer(reset);
+
+@import "./utils.css" layer(components);
+
+body {
+    width: 100vw;
+    overflow-x: clip;
+    height: 100vh;
+    height: 100dvh;
+    padding-top: calc(var(--keyboard-height) + env(safe-area-inset-top, 0));
+    padding-right: env(safe-area-inset-right, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    padding-left: env(safe-area-inset-left, 0);
+
+    font-family: "Departure Mono", var(--font-system-ui);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Departure Mono", var(--font-system-ui);
+    text-transform: uppercase;
+}
+:where(span, p, ul, ol, dl, h6) {
+    font-size: var(--font-size-1);
+}
+
+:where(
+        textarea,
+        select,
+        input:not(:is([type="button"], [type="submit"], [type="reset"]))
+    ) {
+    font-size: var(--font-size-1);
+    border-radius: 0;
+    font-weight: normal;
+}
+[data-icon] {
+    flex-shrink: 0;
+}

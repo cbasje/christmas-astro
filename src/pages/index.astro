@@ -1,16 +1,44 @@
 ---
+import { and, desc, eq, not, sql } from "drizzle-orm";
+import Menu from "../components/Menu.astro";
+import { db } from "../db/index";
+import { users } from "../db/schema/auth";
+import { giftItems } from "../db/schema/gift-item";
+import Layout from "../layouts/Layout.astro";
 
+if (Astro.locals.user === null || Astro.locals.session === null) {
+    return Astro.redirect("/login");
+}
+
+const overview = await db
+    .select({
+        id: giftItems.id,
+        name: giftItems.name,
+        price: giftItems.price,
+        notes: giftItems.notes,
+        link: giftItems.link,
+        purchased: giftItems.purchased,
+        recipientId: giftItems.recipientId,
+    })
+    .from(giftItems)
+    .leftJoin(users, eq(giftItems.recipientId, users.id))
+    .where(
+        and(
+            not(eq(giftItems.recipientId, Astro.locals.user.id)),
+            sql<boolean>`${giftItems.groups} ? ${Astro.locals.group ?? Astro.locals.user.groups?.at(0)}`,
+        ),
+    )
+    .orderBy(desc(users.hue));
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Christmas">
+    <Menu />
+    
+    <main>
+        <h1>Christmas</h1>
+
+        <ul>
+            {overview.map((i) => <li>{i.name}</li>)}
+        </ul>
+    </main>
+</Layout>
