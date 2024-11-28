@@ -45,7 +45,6 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
 
             <button type="submit">Continue</button>
 
-
             {
                 result?.error && (
                     <p id="form-login.error">
@@ -54,7 +53,7 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
                 )
             }
         </form>
-        
+
         <a href="/signup">Create an account</a>
         <a href="/forgot-password">Forgot password?</a>
     </main>

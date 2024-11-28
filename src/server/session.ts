@@ -3,7 +3,7 @@ import {
     encodeBase32LowerCaseNoPadding,
     encodeHexLowerCase,
 } from "@oslojs/encoding";
-import type { APIContext } from "astro";
+import type { AstroCookies } from "astro";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import {
@@ -63,11 +63,11 @@ export async function invalidateUserSessions(userId: string): Promise<void> {
 }
 
 export function setSessionTokenCookie(
-    context: APIContext,
+    cookies: AstroCookies,
     token: string,
     expiresAt: Date,
 ): void {
-    context.cookies.set("session", token, {
+    cookies.set("session", token, {
         httpOnly: true,
         path: "/",
         secure: import.meta.env.PROD,
@@ -76,8 +76,8 @@ export function setSessionTokenCookie(
     });
 }
 
-export function deleteSessionTokenCookie(context: APIContext): void {
-    context.cookies.set("session", "", {
+export function deleteSessionTokenCookie(cookies: AstroCookies): void {
+    cookies.set("session", "", {
         httpOnly: true,
         path: "/",
         secure: import.meta.env.PROD,
@@ -101,16 +101,14 @@ export async function createSession(
     const sessionId = encodeHexLowerCase(
         sha256(new TextEncoder().encode(token)),
     );
-    const session: AuthSession = {
-        id: sessionId,
-        userId,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-        group,
-    };
-    await db.insert(authSessions).values({
-        id: session.id,
-        userId: session.userId,
-        expiresAt: session.expiresAt,
-    });
+    const [session] = await db
+        .insert(authSessions)
+        .values({
+            id: sessionId,
+            userId,
+            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+            group,
+        })
+        .returning();
     return session;
 }

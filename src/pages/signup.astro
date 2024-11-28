@@ -3,7 +3,7 @@ import { actions, isInputError } from "astro:actions";
 import Layout from "../layouts/Layout.astro";
 
 if (Astro.locals.session !== null && Astro.locals.user !== null) {
-	return Astro.redirect("/");
+    return Astro.redirect("/");
 }
 
 const result = Astro.getActionResult(actions.signup);
@@ -11,40 +11,49 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
 ---
 
 <Layout title="Create an account">
-	
-		<main>
-			<h1>Create an account</h1>
-			
-			<form method="POST" action={"/" + actions.signup}>
-				<label for="form-signup.username">Username</label>
-				<input transition:persist type="text" name="username"
-				autocomplete="username" required />
-				{
-					inputErrors.username && (
-						<p id="error">{inputErrors.username.join(",")}</p>
-					)
-				}
-				
-				<label for="form-signup.password">Password</label>
-				<input transition:persist type="password" name="password" autocomplete="new-password" required />
-				{
-					inputErrors.password && (
-						<p id="error">{inputErrors.password.join(",")}</p>
-					)
-				}
-				
-				<button type="submit">Continue</button>
-				
-				{
-					result?.error && (
-						<p id="form-signup.error">
-							Unable to sign up. Please try again later.
-						</p>
-					)
-				}
-			</form>
-			
-			<a href="/login">Sign in</a>
-		</main>
-	
+    <main>
+        <h1>Create an account</h1>
+
+        <form method="POST" action={"/" + actions.signup}>
+            <label for="form-signup.username">Username</label>
+            <input
+                transition:persist
+                type="text"
+                name="username"
+                autocomplete="username"
+                required
+            />
+            {
+                inputErrors.username && (
+                    <p id="error">{inputErrors.username.join(",")}</p>
+                )
+            }
+
+            <label for="form-signup.password">Password</label>
+            <input
+                transition:persist
+                type="password"
+                name="password"
+                autocomplete="new-password"
+                required
+            />
+            {
+                inputErrors.password && (
+                    <p id="error">{inputErrors.password.join(",")}</p>
+                )
+            }
+
+            <button type="submit">Continue</button>
+
+            {
+                result?.error && (
+                    <p id="form-signup.error">
+                        Unable to sign up. Please try again later.
+                    </p>
+                )
+            }
+        </form>
+
+        <a href="/login">Sign in</a>
+    </main>
 </Layout>
