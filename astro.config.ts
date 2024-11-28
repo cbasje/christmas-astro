@@ -7,7 +7,7 @@ import icon from "astro-icon";
 export default defineConfig({
     output: "server",
     adapter: deno({
-        host: "0.0.0.0",
+        hostname: "0.0.0.0",
         port: 3000,
     }),
     security: {
