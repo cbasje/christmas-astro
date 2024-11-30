@@ -62,7 +62,7 @@ export const authSessions = pgTable("sessions", {
         withTimezone: true,
         mode: "date",
     }).notNull(),
-    group: text("group").$type<Group>(),
+    group: text("group").$type<Group>().notNull(),
 });
 
 export type AuthSession = typeof authSessions.$inferSelect;

@@ -1,7 +1,23 @@
 ---
-import { actions, isInputError } from "astro:actions";
+import { actions } from "astro:actions";
 ---
 
-<form method="POST" action={'/login' + actions.logout}>
-	<button type="submit">Sign out</button>
-</form>
+<ul>
+	<li>
+		<a href="/">Home</a>
+	</li>
+
+	<li>
+		<a href="/wish-list">Wish list</a>
+	</li>
+
+	<li>
+		<a href="/ideas">Ideas</a>
+	</li>
+	
+	<li>
+		<form method="POST" action={'/login' + actions.logout}>
+			<button type="submit">Sign out</button>
+		</form>
+	</li>
+</ul>

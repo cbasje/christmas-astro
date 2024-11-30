@@ -1,0 +1,78 @@
+---
+import { and, desc, eq, isNotNull, not, or } from "drizzle-orm";
+import Menu from "../../components/Menu.astro";
+import { db } from "../../db";
+import { users } from "../../db/schema/auth";
+import { ideas } from "../../db/schema/gift-item";
+import Layout from "../../layouts/Layout.astro";
+import { jsonAggBuildObject } from "../../lib/utils/drizzle/json";
+
+if (Astro.locals.user === null || Astro.locals.session === null) {
+    return Astro.redirect("/login");
+}
+
+const sq = db.$with("sq").as(
+    db
+        .select({
+            id: ideas.id,
+            name: ideas.name,
+            price: ideas.price,
+            recipientId: ideas.recipientId,
+            giftedById: ideas.giftedById,
+            link: ideas.link,
+            purchased: ideas.purchased,
+            giftItemId: ideas.giftItemId,
+        })
+        .from(ideas)
+        .leftJoin(users, eq(ideas.recipientId, users.id))
+        .where(
+            and(
+                not(eq(ideas.recipientId, Astro.locals.user.id)),
+                isNotNull(ideas.giftedById),
+                or(
+                    eq(ideas.giftedById, Astro.locals.user.id),
+                    Astro.locals.user.partnerId
+                        ? eq(
+                              ideas.giftedById,
+                              Astro.locals.user.partnerId ?? "",
+                          )
+                        : undefined,
+                ),
+            ),
+        ),
+);
+const ideaList = await db
+    .with(sq)
+    .select({
+        name: users.name,
+        items: jsonAggBuildObject(sq._.selectedFields),
+    })
+    .from(sq)
+    .leftJoin(users, eq(sq.recipientId, users.id))
+    .groupBy(sq.recipientId, users.name, users.hue)
+    .orderBy(desc(users.hue));
+---
+
+<Layout title="Christmas">
+    <Menu transition:persist client:idle />
+
+    <main>
+        <h1>Ideas</h1>
+
+        {
+            ideaList.map((p) => (
+                <details>
+                    <summary>{p.name}</summary>
+
+                    <ul>
+                        {p.items.map((i) => (
+                            <li>
+                                <div class="name">{i.name}</div>
+                            </li>
+                        ))}
+                    </ul>
+                </details>
+            ))
+        }
+    </main>
+</Layout>

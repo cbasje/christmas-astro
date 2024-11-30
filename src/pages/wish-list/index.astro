@@ -1,0 +1,49 @@
+---
+import { and, eq, sql } from "drizzle-orm";
+import Menu from "../../components/Menu.astro";
+import { db } from "../../db";
+import { giftItems } from "../../db/schema/gift-item";
+import Layout from "../../layouts/Layout.astro";
+
+if (Astro.locals.user === null || Astro.locals.session === null) {
+    return Astro.redirect("/login");
+}
+
+const wishList = await db
+    .select({
+        id: giftItems.id,
+        name: giftItems.name,
+        price: giftItems.price,
+        notes: giftItems.notes,
+        link: giftItems.link,
+        recipientId: giftItems.recipientId,
+        giftedById: giftItems.giftedById,
+        groups: giftItems.groups,
+    })
+    .from(giftItems)
+    .where(
+        and(
+            eq(giftItems.recipientId, Astro.locals.user.id),
+            sql<boolean>`${giftItems.groups} ? ${Astro.locals.session.group ?? Astro.locals.user.groups?.at(0)}`,
+        ),
+    );
+---
+
+<Layout title="Christmas">
+    <Menu transition:persist client:idle />
+
+    <main>
+        <h1>Wish list</h1>
+
+        <ul>
+            {
+                wishList.map((i) => (
+                    <li>
+                        <div class="name">{i.name}</div>
+                        <div class="description">{i.notes}</div>
+                    </li>
+                ))
+            }
+        </ul>
+    </main>
+</Layout>

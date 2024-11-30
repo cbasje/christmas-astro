@@ -5,40 +5,77 @@ import { db } from "../db/index";
 import { users } from "../db/schema/auth";
 import { giftItems } from "../db/schema/gift-item";
 import Layout from "../layouts/Layout.astro";
+import { jsonAggBuildObject } from "../lib/utils/drizzle/json";
 
 if (Astro.locals.user === null || Astro.locals.session === null) {
     return Astro.redirect("/login");
 }
 
-const overview = await db
-    .select({
-        id: giftItems.id,
-        name: giftItems.name,
-        price: giftItems.price,
-        notes: giftItems.notes,
-        link: giftItems.link,
-        purchased: giftItems.purchased,
-        recipientId: giftItems.recipientId,
-    })
-    .from(giftItems)
-    .leftJoin(users, eq(giftItems.recipientId, users.id))
-    .where(
-        and(
-            not(eq(giftItems.recipientId, Astro.locals.user.id)),
-            sql<boolean>`${giftItems.groups} ? ${Astro.locals.group ?? Astro.locals.user.groups?.at(0)}`,
+const sq = db.$with("sq").as(
+    db
+        .select({
+            id: giftItems.id,
+            name: giftItems.name,
+            price: giftItems.price,
+            notes: giftItems.notes,
+            link: giftItems.link,
+            purchased: giftItems.purchased,
+            recipientId: giftItems.recipientId,
+        })
+        .from(giftItems)
+        .where(
+            and(
+                not(eq(giftItems.recipientId, Astro.locals.user.id)),
+                sql<boolean>`${giftItems.groups} ? ${Astro.locals.session.group ?? Astro.locals.user.groups?.at(0)}`,
+            ),
         ),
-    )
+);
+const overview = await db
+    .with(sq)
+    .select({
+        name: users.name,
+        items: jsonAggBuildObject(sq._.selectedFields),
+    })
+    .from(sq)
+    .leftJoin(users, eq(sq.recipientId, users.id))
+    .groupBy(sq.recipientId, users.name, users.hue)
     .orderBy(desc(users.hue));
 ---
 
 <Layout title="Christmas">
-    <Menu />
-    
-    <main>
-        <h1>Christmas</h1>
+    <Menu transition:persist client:idle />
 
-        <ul>
-            {overview.map((i) => <li>{i.name}</li>)}
-        </ul>
+    <main>
+        <h1>Christmas gifts</h1>
+
+        {
+            overview.map((p) => (
+                <details>
+                    <summary>{p.name}</summary>
+
+                    <ul>
+                        {p.items.map((i) => (
+                            <li class:list={[i.purchased && "purchased"]}>
+                                <div class="name">{i.name}</div>
+                                <div class="description">{i.notes}</div>
+                            </li>
+                        ))}
+                    </ul>
+                </details>
+            ))
+        }
     </main>
 </Layout>
+
+<style>
+    ul li {
+        &.purchased {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .name {
+            font-weight: bolder;
+        }
+    }
+</style>
