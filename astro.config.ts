@@ -1,5 +1,6 @@
 import { defineConfig, envField } from "astro/config";
 
+import svelte from "@astrojs/svelte";
 import deno from "@deno/astro-adapter";
 import icon from "astro-icon";
 
@@ -27,6 +28,7 @@ export default defineConfig({
                 ],
             },
         }),
+        svelte(),
     ],
 
     site: "https://christmas.benjami.in",

@@ -1,6 +1,10 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:schema";
+import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid/non-secure";
+import { db } from "./db/index.js";
 import { Groups } from "./db/schema/auth.js";
+import { giftItems, ideas } from "./db/schema/gift-item.js";
 import { verifyPasswordHash } from "./server/password.js";
 import {
     createSession,
@@ -114,6 +118,32 @@ export const server = {
                 sessionToken,
                 session.expiresAt,
             );
+        },
+    }),
+
+    togglePurchased: defineAction({
+        accept: "form",
+        input: z.object({
+            id: z.string(),
+            type: z.enum(["IDEA", "GIFT"]),
+            purchased: z.boolean(),
+        }),
+        handler: async ({ id, type, purchased }) => {
+            if (type === "GIFT") {
+                await db
+                    .update(giftItems)
+                    .set({
+                        purchased,
+                    })
+                    .where(eq(giftItems.id, id));
+            } else {
+                await db
+                    .update(ideas)
+                    .set({
+                        purchased,
+                    })
+                    .where(eq(ideas.id, id));
+            }
         },
     }),
 };

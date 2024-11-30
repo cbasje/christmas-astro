@@ -1,6 +1,7 @@
 ---
 import { and, desc, eq, isNotNull, not, or } from "drizzle-orm";
 import Menu from "../../components/Menu.astro";
+import TogglePurchasedCheckbox from "../../components/TogglePurchasedCheckbox.svelte";
 import { db } from "../../db";
 import { users } from "../../db/schema/auth";
 import { ideas } from "../../db/schema/gift-item";
@@ -68,6 +69,8 @@ const ideaList = await db
                         {p.items.map((i) => (
                             <li>
                                 <div class="name">{i.name}</div>
+                                
+                                <TogglePurchasedCheckbox item_id={i.id} type="IDEA" checked={i.purchased} client:idle />
                             </li>
                         ))}
                     </ul>
