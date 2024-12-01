@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 RUN deno install
 RUN deno task astro build
-RUN deno cache main.ts
+RUN deno cache dist/server/entry.mjs
 
 USER deno
 EXPOSE 3000
