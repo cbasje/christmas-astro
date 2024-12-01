@@ -9,4 +9,4 @@ RUN deno cache dist/server/entry.mjs
 USER deno
 EXPOSE 3000
 
-CMD ["run", "--allow-net", "--allow-read", "--allow-env", "--unstable-kv", "dist/server/entry.mjs"]
+CMD ["run", "--allow-net", "--allow-read", "--allow-env", "--allow-ffi", "dist/server/entry.mjs"]
