@@ -9,4 +9,4 @@ RUN deno cache main.ts
 USER deno
 EXPOSE 3000
 
-CMD ["run", "--allow-net", "--allow-read", "--allow-env", "--unstable-kv", "main.ts"]
+CMD ["run", "--allow-net", "--allow-read", "--allow-env", "--unstable-kv", "dist/server/entry.mjs"]
