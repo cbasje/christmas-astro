@@ -10,6 +10,9 @@ export default defineConfig({
     adapter: deno({
         hostname: "0.0.0.0",
         port: 3000,
+        esbuild: {
+            external: ["@node-rs/argon2"],
+        },
     }),
     security: {
         checkOrigin: true,
