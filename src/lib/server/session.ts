@@ -8,7 +8,6 @@ import { eq } from "drizzle-orm";
 import { db } from "../../db";
 import {
     type AuthSession,
-    type Group,
     type User,
     authSessions,
     users,
@@ -96,7 +95,6 @@ export function generateSessionToken(): string {
 export async function createSession(
     token: string,
     userId: string,
-    group: Group,
 ): Promise<AuthSession> {
     const sessionId = encodeHexLowerCase(
         sha256(new TextEncoder().encode(token)),
@@ -107,7 +105,6 @@ export async function createSession(
             id: sessionId,
             userId,
             expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-            group,
         })
         .returning();
     return session;

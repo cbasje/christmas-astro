@@ -32,7 +32,7 @@ export const users = pgTable("users", {
     name: text("name").unique(),
     username: text("user_name").notNull().unique(),
     partnerId: text("partner_id"),
-    groups: jsonb("groups").$type<Group[]>(),
+    groups: jsonb("groups").notNull().$type<Group[]>(),
     hue: integer("hue").default(145).notNull(),
     // sizes: jsonb("sizes").$type<UserSizes>(),
     hashedPassword: varchar("hashed_password", {
@@ -62,7 +62,6 @@ export const authSessions = pgTable("sessions", {
         withTimezone: true,
         mode: "date",
     }).notNull(),
-    group: text("group").$type<Group>().notNull(),
 });
 
 export type AuthSession = typeof authSessions.$inferSelect;

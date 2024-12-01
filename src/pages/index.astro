@@ -3,7 +3,7 @@ import { and, desc, eq, not, sql } from "drizzle-orm";
 import ItemRow from "../components/ItemRow.svelte";
 import Menu from "../components/Menu.astro";
 import { db } from "../db/index";
-import { users } from "../db/schema/auth";
+import { type Group, users } from "../db/schema/auth";
 import { giftItems } from "../db/schema/gift-item";
 import Layout from "../layouts/Layout.astro";
 import { jsonAggBuildObject } from "../lib/utils/drizzle/json";
@@ -11,6 +11,8 @@ import { jsonAggBuildObject } from "../lib/utils/drizzle/json";
 if (Astro.locals.user === null || Astro.locals.session === null) {
     return Astro.redirect("/login");
 }
+
+const group = Astro.url.searchParams.get("group") as Group | null;
 
 const sq = db.$with("sq").as(
     db
@@ -28,7 +30,7 @@ const sq = db.$with("sq").as(
         .where(
             and(
                 not(eq(giftItems.recipientId, Astro.locals.user.id)),
-                sql<boolean>`${giftItems.groups} ? ${Astro.locals.session.group ?? Astro.locals.user.groups?.at(0)}`,
+                sql<boolean>`${giftItems.groups} ? ${group ?? Astro.locals.user.groups?.at(0)}`,
             ),
         ),
 );

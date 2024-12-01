@@ -42,11 +42,7 @@ export const server = {
             }
 
             const sessionToken = generateSessionToken();
-            const session = await createSession(
-                sessionToken,
-                user.id,
-                user.groups?.at(0) ?? "BENJAMINS",
-            );
+            const session = await createSession(sessionToken, user.id);
             setSessionTokenCookie(
                 context.cookies,
                 sessionToken,
@@ -78,40 +74,7 @@ export const server = {
             const user = await createUser(username, password);
 
             const sessionToken = generateSessionToken();
-            const session = await createSession(
-                sessionToken,
-                user.id,
-                user.groups?.at(0) ?? "BENJAMINS",
-            );
-            setSessionTokenCookie(
-                context.cookies,
-                sessionToken,
-                session.expiresAt,
-            );
-        },
-    }),
-    switchGroup: defineAction({
-        accept: "form",
-        input: z.object({
-            group: z.enum(Groups),
-        }),
-        handler: async ({ group }, context) => {
-            const oldSession = context.locals.session;
-            if (oldSession === null) {
-                throw new ActionError({
-                    code: "UNAUTHORIZED",
-                    message: "Not authenticated",
-                });
-            }
-
-            await invalidateSession(oldSession.id);
-
-            const sessionToken = generateSessionToken();
-            const session = await createSession(
-                sessionToken,
-                oldSession.userId,
-                group,
-            );
+            const session = await createSession(sessionToken, user.id);
             setSessionTokenCookie(
                 context.cookies,
                 sessionToken,
