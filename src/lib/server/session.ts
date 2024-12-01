@@ -5,14 +5,14 @@ import {
 } from "@oslojs/encoding";
 import type { AstroCookies } from "astro";
 import { eq } from "drizzle-orm";
-import { db } from "../db";
+import { db } from "../../db";
 import {
     type AuthSession,
     type Group,
     type User,
     authSessions,
     users,
-} from "../db/schema/auth";
+} from "../../db/schema/auth";
 
 export async function validateSessionToken(
     token: string,

@@ -1,19 +1,18 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:schema";
-import { eq } from "drizzle-orm";
-import { nanoid } from "nanoid/non-secure";
-import { db } from "./db/index.js";
-import { Groups } from "./db/schema/auth.js";
-import { giftItems, ideas } from "./db/schema/gift-item.js";
-import { verifyPasswordHash } from "./server/password.js";
+import { verifyPasswordHash } from "@lib/server/password";
 import {
     createSession,
     deleteSessionTokenCookie,
     generateSessionToken,
     invalidateSession,
     setSessionTokenCookie,
-} from "./server/session.js";
-import { createUser, getUserFromUsername } from "./server/user.js";
+} from "@lib/server/session";
+import { createUser, getUserFromUsername } from "@lib/server/user";
+import { eq } from "drizzle-orm";
+import { db } from "./db";
+import { Groups } from "./db/schema/auth";
+import { giftItems, ideas } from "./db/schema/gift-item";
 
 export const server = {
     login: defineAction({

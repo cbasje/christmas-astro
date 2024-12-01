@@ -3,7 +3,7 @@ import {
     deleteSessionTokenCookie,
     setSessionTokenCookie,
     validateSessionToken,
-} from "./server/session";
+} from "./lib/server/session";
 
 export const onRequest = defineMiddleware(async (context, next) => {
     const token = context.cookies.get("session")?.value ?? null;
