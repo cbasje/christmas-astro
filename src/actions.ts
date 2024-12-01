@@ -147,4 +147,36 @@ export const server = {
             return purchased;
         },
     }),
+
+    newWishList: defineAction({
+        accept: "form",
+        input: z.object({
+            name: z.string(),
+            price: z
+                .string()
+                .regex(/(?:[$€])?\s?\d+(?:[,.]\d+)?/g, {
+                    message:
+                        "Price must consist of numbers with currency codes.",
+                })
+                .nullish(),
+            notes: z.string().nullish(),
+            link: z.string().url().nullish(),
+            groups: z.enum(Groups).array().optional(),
+        }),
+        handler: async ({ name, price, notes, link, groups }, context) => {
+            if (!context.locals.user) return;
+
+            const userGroup = context.locals.user.groups?.at(0);
+
+            await db.insert(giftItems).values({
+                id: crypto.randomUUID(),
+                name,
+                price,
+                recipientId: context.locals.user.id,
+                notes,
+                link,
+                groups: groups ? groups : userGroup ? [userGroup] : [],
+            });
+        },
+    }),
 };

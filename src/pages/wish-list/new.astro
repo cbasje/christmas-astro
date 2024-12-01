@@ -1,0 +1,103 @@
+---
+import { actions, isInputError } from "astro:actions";
+import Menu from "../../components/Menu.astro";
+import { Groups } from "../../db/schema/auth";
+import Layout from "../../layouts/Layout.astro";
+import { capitaliseString } from "../../lib/utils";
+
+if (Astro.locals.user === null || Astro.locals.session === null) {
+    return Astro.redirect("/login");
+}
+
+const result = Astro.getActionResult(actions.newWishList);
+const inputErrors = isInputError(result?.error) ? result.error.fields : {};
+---
+
+<Layout title="Christmas">
+    <Menu transition:persist />
+
+    <main>
+        <h1>New item</h1>
+
+        <form method="POST" action={"/wish-list" + actions.newWishList}>
+            <label for="form-login.name">Name</label>
+            <input
+                transition:persist
+                type="text"
+                name="name"
+                autocomplete="name"
+                required
+            />
+            {inputErrors.name && <p id="error">{inputErrors.name.join(",")}</p>}
+
+            <label for="form-login.price">Price</label>
+            <input
+                transition:persist
+                type="text"
+                name="price"
+                autocomplete="transaction-amount"
+            />
+            {
+                inputErrors.price && (
+                    <p id="error">{inputErrors.price.join(",")}</p>
+                )
+            }
+
+            <label for="form-login.notes">Note</label>
+            <textarea
+                transition:persist
+                name="notes"
+                rows="3"
+                placeholder="Type here more information about the item..."
+            ></textarea>
+            {
+                inputErrors.notes && (
+                    <p id="error">{inputErrors.notes.join(",")}</p>
+                )
+            }
+
+            <label for="form-login.link">Link</label>
+            <input
+                transition:persist
+                type="text"
+                name="link"
+                placeholder="www.example.com..."
+            />
+            {inputErrors.link && <p id="error">{inputErrors.link.join(",")}</p>}
+
+            {
+                Astro.locals.user.groups &&
+                    Astro.locals.user.groups.length > 1 && (
+                        <>
+                            <label for="form-login.groups">Groups</label>
+                            <select
+                                multiple
+                                transition:persist
+                                name="groups"
+                                required
+                            >
+                                {Groups.map((g) => (
+                                    <option value={g}>
+                                        {capitaliseString(g)}
+                                    </option>
+                                ))}
+                            </select>
+                            {inputErrors.link && (
+                                <p id="error">{inputErrors.link.join(",")}</p>
+                            )}
+                        </>
+                    )
+            }
+
+            <button type="submit">Submit</button>
+
+            {
+                result?.error && (
+                    <p id="form-login.error">
+                        Unable to submit. Please try again later.
+                    </p>
+                )
+            }
+        </form>
+    </main>
+</Layout>

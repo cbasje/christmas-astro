@@ -37,6 +37,8 @@ const wishList = await db
     <main>
         <h1>Wish list</h1>
 
+        <a href="wish-list/new">New</a>
+
         <ul>
             {wishList.map((i) => <ItemRow item={i} client:idle />)}
         </ul>
