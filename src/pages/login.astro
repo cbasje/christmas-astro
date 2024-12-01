@@ -22,10 +22,13 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
                 name="username"
                 autocomplete="username"
                 required
+                aria-describedby="form-login.username-error"
             />
             {
                 inputErrors.username && (
-                    <p id="error">{inputErrors.username.join(",")}</p>
+                    <p id="form-login.username-error">
+                        {inputErrors.username.join(",")}
+                    </p>
                 )
             }
 
@@ -36,10 +39,13 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
                 name="password"
                 autocomplete="current-password"
                 required
+                aria-describedby="form-login.password-error"
             />
             {
                 inputErrors.password && (
-                    <p id="error">{inputErrors.password.join(",")}</p>
+                    <p id="form-login.password-error">
+                        {inputErrors.password.join(",")}
+                    </p>
                 )
             }
 
