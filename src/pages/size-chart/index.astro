@@ -1,0 +1,98 @@
+---
+import { actions, isInputError } from "astro:actions";
+import SizeChartSimple from "src/components/SizeChartSimple.astro";
+import SizeChartSimpleEmpty from "src/components/SizeChartSimpleEmpty.astro";
+import Menu from "../../components/Menu.astro";
+import Layout from "../../layouts/Layout.astro";
+
+if (Astro.locals.user === null || Astro.locals.session === null) {
+    return Astro.redirect("/login");
+}
+
+const result = Astro.getActionResult(actions.updateSizes);
+const inputErrors = isInputError(result?.error) ? result.error.fields : {};
+---
+
+<Layout title="Christmas">
+    <Menu transition:persist />
+
+    <main>
+        <h1>Size Chart</h1>
+
+        <form method="POST" action={actions.updateSizes}>
+            <button
+                type="submit"
+                class="flex items-center justify-center gap-3 self-end rounded-md border border-primary-700 bg-primary-600 px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 enabled:hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                Save
+            </button>
+
+            <div class="size-chart">
+                <SizeChartSimpleEmpty />
+                <SizeChartSimple />
+
+                <div style="right: 68%; top: 28%;">
+                    <label for="top">Top</label>
+                    <input
+                        transition:persist
+                        id="top"
+                        type="text"
+                        name="top"
+                        value={Astro.locals.user.sizes?.simple.top}
+                        placeholder="S, M, L, etc."
+                        aria-describedby="form-login.top-error"
+                    />
+                    {inputErrors.top && <p>{inputErrors.top.join(",")}</p>}
+                </div>
+
+                <div style="right: 68%; top: 61%;">
+                    <label for="bottom">Bottom</label>
+                    <input
+                        transition:persist
+                        id="bottom"
+                        type="text"
+                        name="bottom"
+                        value={Astro.locals.user.sizes?.simple.bottom}
+                        placeholder="W33 L36, etc."
+                        aria-describedby="form-login.bottom-error"
+                    />
+                    {
+                        inputErrors.bottom && (
+                            <p>{inputErrors.bottom.join(",")}</p>
+                        )
+                    }
+                </div>
+
+                <div style="right: 68%; top: 82.5%;">
+                    <label for="shoe">Shoe size</label>
+                    <input
+                        transition:persist
+                        type="text"
+                        name="shoe"
+                        value={Astro.locals.user.sizes?.simple.shoe}
+                        placeholder="One big foot"
+                        aria-describedby="form-login.shoe-error"
+                    />
+                    {inputErrors.shoe && <p>{inputErrors.shoe.join(",")}</p>}
+                </div>
+            </div>
+        </form>
+    </main>
+</Layout>
+
+<style>
+    .size-chart {
+        position: relative;
+
+        width: 75vmin;
+        height: auto;
+        aspect-ratio: 1;
+
+        > div {
+            position: absolute;
+
+            display: flex;
+            flex-direction: column;
+        }
+    }
+</style>

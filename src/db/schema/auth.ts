@@ -1,3 +1,4 @@
+import { z } from "astro:schema";
 import {
     integer,
     jsonb,
@@ -10,22 +11,22 @@ import {
 export const Groups = ["BENJAMINS", "HAUGEN"] as const;
 export type Group = (typeof Groups)[number];
 
-// export const UserSizesSchema = z.object({
-// 	simple: z.object({
-// 		top: z.string().optional(),
-// 		bottom: z.string().optional(),
-// 		shoe: z.string().optional(),
-// 	}),
-// 	advanced: z.object({
-// 		head: z.string().optional(),
-// 		sleeve: z.string().optional(),
-// 		chest: z.string().optional(),
-// 		waist: z.string().optional(),
-// 		hip: z.string().optional(),
-// 		inseam: z.string().optional(),
-// 	}),
-// });
-// export type UserSizes = z.infer<typeof UserSizesSchema>;
+export const UserSizesSchema = z.object({
+    simple: z.object({
+        top: z.string().optional(),
+        bottom: z.string().optional(),
+        shoe: z.string().optional(),
+    }),
+    advanced: z.object({
+        head: z.string().optional(),
+        sleeve: z.string().optional(),
+        chest: z.string().optional(),
+        waist: z.string().optional(),
+        hip: z.string().optional(),
+        inseam: z.string().optional(),
+    }),
+});
+export type UserSizes = z.infer<typeof UserSizesSchema>;
 
 export const users = pgTable("users", {
     id: text("id").primaryKey().notNull(),
@@ -34,7 +35,7 @@ export const users = pgTable("users", {
     partnerId: text("partner_id"),
     groups: jsonb("groups").notNull().$type<Group[]>(),
     hue: integer("hue").default(145).notNull(),
-    // sizes: jsonb("sizes").$type<UserSizes>(),
+    sizes: jsonb("sizes").$type<UserSizes>(),
     hashedPassword: varchar("hashed_password", {
         length: 255,
     }),

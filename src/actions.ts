@@ -9,9 +9,9 @@ import {
     setSessionTokenCookie,
 } from "@lib/server/session";
 import { createUser, getUserFromUsername } from "@lib/server/user";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "./db";
-import { Groups } from "./db/schema/auth";
+import { Groups, UserSizesSchema, users } from "./db/schema/auth";
 import { giftItems, ideas } from "./db/schema/gift-item";
 
 export const server = {
@@ -96,6 +96,7 @@ export const server = {
                     .update(giftItems)
                     .set({
                         purchased,
+                        updatedAt: new Date(),
                     })
                     .where(eq(giftItems.id, id));
             } else {
@@ -103,6 +104,7 @@ export const server = {
                     .update(ideas)
                     .set({
                         purchased,
+                        updatedAt: new Date(),
                     })
                     .where(eq(ideas.id, id));
             }
@@ -140,6 +142,26 @@ export const server = {
                 link,
                 groups: groups ? groups : userGroup ? [userGroup] : [],
             });
+        },
+    }),
+
+    updateSizes: defineAction({
+        accept: "form",
+        input: UserSizesSchema.shape.simple,
+        handler: async (simple, context) => {
+            if (!context.locals.user) return;
+
+            await db
+                .update(users)
+                .set({
+                    sizes: sql`jsonb_set(
+                        COALESCE(${users.sizes}, '{}'::jsonb),
+                        '{simple}',
+                        ${JSON.stringify(simple ?? {})}::jsonb, TRUE
+                    )`,
+                    updatedAt: new Date(),
+                })
+                .where(eq(users.id, context.locals.user.id ?? ""));
         },
     }),
 };

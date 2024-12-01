@@ -33,6 +33,15 @@ const possibleGroups = Astro.locals.user ? Astro.locals.user.groups : [];
         </a>
     </li>
 
+    <li>
+        <a
+            href="/size-chart"
+            aria-current={pathname === "/size-chart" ? "page" : undefined}
+        >
+            Size Chart
+        </a>
+    </li>
+
     {
         possibleGroups.length > 1 && (
             <li>

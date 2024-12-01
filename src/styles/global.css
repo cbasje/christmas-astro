@@ -1,3 +1,5 @@
+@import "open-props/media";
+
 @import "open-props/fonts" layer(fonts);
 @import "./fonts.css" layer(fonts);
 
