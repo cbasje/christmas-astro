@@ -1,5 +1,6 @@
 ---
 import { and, eq, sql } from "drizzle-orm";
+import ItemRow from "../../components/ItemRow.svelte";
 import Menu from "../../components/Menu.astro";
 import { db } from "../../db";
 import { giftItems } from "../../db/schema/gift-item";
@@ -12,6 +13,7 @@ if (Astro.locals.user === null || Astro.locals.session === null) {
 const wishList = await db
     .select({
         id: giftItems.id,
+        type: sql<"GIFT" | "IDEA" | "WISH">`'WISH'`.as("type"),
         name: giftItems.name,
         price: giftItems.price,
         notes: giftItems.notes,
@@ -30,20 +32,13 @@ const wishList = await db
 ---
 
 <Layout title="Christmas">
-    <Menu transition:persist client:idle />
+    <Menu transition:persist />
 
     <main>
         <h1>Wish list</h1>
 
         <ul>
-            {
-                wishList.map((i) => (
-                    <li>
-                        <div class="name">{i.name}</div>
-                        <div class="description">{i.notes}</div>
-                    </li>
-                ))
-            }
+            {wishList.map((i) => <ItemRow item={i} client:idle />)}
         </ul>
     </main>
 </Layout>

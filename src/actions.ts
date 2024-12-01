@@ -143,6 +143,8 @@ export const server = {
                     })
                     .where(eq(ideas.id, id));
             }
+
+            return purchased;
         },
     }),
 };

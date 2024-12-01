@@ -1,7 +1,7 @@
 ---
-import { and, desc, eq, isNotNull, not, or } from "drizzle-orm";
+import { and, desc, eq, isNotNull, not, or, sql } from "drizzle-orm";
+import ItemRow from "../../components/ItemRow.svelte";
 import Menu from "../../components/Menu.astro";
-import TogglePurchasedCheckbox from "../../components/TogglePurchasedCheckbox.svelte";
 import { db } from "../../db";
 import { users } from "../../db/schema/auth";
 import { ideas } from "../../db/schema/gift-item";
@@ -16,6 +16,7 @@ const sq = db.$with("sq").as(
     db
         .select({
             id: ideas.id,
+            type: sql<"GIFT" | "IDEA" | "WISH">`'IDEA'`.as("type"),
             name: ideas.name,
             price: ideas.price,
             recipientId: ideas.recipientId,
@@ -55,7 +56,7 @@ const ideaList = await db
 ---
 
 <Layout title="Christmas">
-    <Menu transition:persist client:idle />
+    <Menu transition:persist />
 
     <main>
         <h1>Ideas</h1>
@@ -67,11 +68,7 @@ const ideaList = await db
 
                     <ul>
                         {p.items.map((i) => (
-                            <li>
-                                <div class="name">{i.name}</div>
-                                
-                                <TogglePurchasedCheckbox item_id={i.id} type="IDEA" checked={i.purchased} client:idle />
-                            </li>
+                            <ItemRow item={i} client:idle />
                         ))}
                     </ul>
                 </details>

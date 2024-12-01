@@ -1,7 +1,7 @@
 ---
 import { and, desc, eq, not, sql } from "drizzle-orm";
+import ItemRow from "../components/ItemRow.svelte";
 import Menu from "../components/Menu.astro";
-import TogglePurchasedCheckbox from "../components/TogglePurchasedCheckbox.svelte";
 import { db } from "../db/index";
 import { users } from "../db/schema/auth";
 import { giftItems } from "../db/schema/gift-item";
@@ -16,6 +16,7 @@ const sq = db.$with("sq").as(
     db
         .select({
             id: giftItems.id,
+            type: sql<"GIFT" | "IDEA" | "WISH">`'GIFT'`.as("type"),
             name: giftItems.name,
             price: giftItems.price,
             notes: giftItems.notes,
@@ -44,7 +45,7 @@ const overview = await db
 ---
 
 <Layout title="Christmas">
-    <Menu transition:persist client:idle />
+    <Menu transition:persist />
 
     <main>
         <h1>Christmas gifts</h1>
@@ -56,12 +57,7 @@ const overview = await db
 
                     <ul>
                         {p.items.map((i) => (
-                            <li class:list={[i.purchased && "purchased"]}>
-                                <div class="name">{i.name}</div>
-                                <div class="description">{i.notes}</div>
-                                
-                                <TogglePurchasedCheckbox item_id={i.id} type="GIFT" checked={i.purchased} client:idle />
-                            </li>
+                            <ItemRow item={i} client:idle />
                         ))}
                     </ul>
                 </details>
@@ -69,16 +65,3 @@ const overview = await db
         }
     </main>
 </Layout>
-
-<style>
-    ul li {
-        &.purchased {
-            text-decoration: line-through;
-            opacity: 0.5;
-        }
-
-        .name {
-            font-weight: bolder;
-        }
-    }
-</style>
