@@ -10,6 +10,7 @@ import {
 } from "@lib/server/session";
 import { createUser, getUserFromUsername } from "@lib/server/user";
 import { eq, sql } from "drizzle-orm";
+import ogs from "open-graph-scraper-lite";
 import { db } from "./db";
 import { Groups, UserSizesSchema, users } from "./db/schema/auth";
 import { giftItems, ideas } from "./db/schema/gift-item";
@@ -110,6 +111,37 @@ export const server = {
             }
 
             return purchased;
+        },
+    }),
+
+    loadURLData: defineAction({
+        accept: "form",
+        input: z.object({
+            link: z.string().url(),
+        }),
+        handler: async ({ link }, context) => {
+            if (!context.locals.user) return;
+
+            const response = await fetch(link);
+            const html = await response.text();
+            console.log(html);
+            if (!html) {
+                throw new ActionError({
+                    code: "UNAUTHORIZED",
+                    message: "Not authenticated",
+                });
+            }
+
+            const { error, result } = await ogs({ html });
+            console.log(error, result);
+            if (error) {
+                throw new ActionError({
+                    code: "UNAUTHORIZED",
+                    message: "Not authenticated",
+                });
+            }
+
+            return result;
         },
     }),
 

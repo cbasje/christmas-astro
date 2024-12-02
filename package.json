@@ -21,6 +21,7 @@
         "astro-icon": "^1.1.4",
         "drizzle-orm": "^0.36.4",
         "nanoid": "^5.0.9",
+        "open-graph-scraper-lite": "^2.1.0",
         "open-props": "^1.7.7",
         "svelte": "^5.2.11",
         "typescript": "^5.7.2"

@@ -1,5 +1,6 @@
 ---
 import { actions, isInputError } from "astro:actions";
+import LinkInput from "../../components/LinkInput.svelte";
 import Menu from "../../components/Menu.astro";
 import { Groups } from "../../db/schema/auth";
 import Layout from "../../layouts/Layout.astro";
@@ -20,74 +21,50 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
         <h1>New item</h1>
 
         <form method="POST" action={"/wish-list" + actions.newWishList}>
-            <label for="form-login.name">Name</label>
-            <input
-                transition:persist
-                type="text"
-                name="name"
-                autocomplete="name"
-                required
-            />
-            {inputErrors.name && <p id="error">{inputErrors.name.join(",")}</p>}
+            <LinkInput {inputErrors} transition:persist client:idle />
 
-            <label for="form-login.price">Price</label>
-            <input
-                transition:persist
-                type="text"
-                name="price"
-                autocomplete="transaction-amount"
-            />
-            {
-                inputErrors.price && (
-                    <p id="error">{inputErrors.price.join(",")}</p>
-                )
-            }
-
-            <label for="form-login.notes">Note</label>
-            <textarea
-                transition:persist
-                name="notes"
-                rows="3"
-                placeholder="Type here more information about the item..."
-            ></textarea>
-            {
-                inputErrors.notes && (
-                    <p id="error">{inputErrors.notes.join(",")}</p>
-                )
-            }
-
-            <label for="form-login.link">Link</label>
-            <input
-                transition:persist
-                type="text"
-                name="link"
-                placeholder="www.example.com..."
-            />
-            {inputErrors.link && <p id="error">{inputErrors.link.join(",")}</p>}
-
-            {
-                Astro.locals.user.groups &&
-                    Astro.locals.user.groups.length > 1 && (
-                        <>
-                            <label for="form-login.groups">Groups</label>
-                            <select
-                                multiple
-                                transition:persist
-                                name="groups"
-                                required
-                            >
-                                {Groups.map((g) => (
-                                    <option value={g}>
-                                        {capitaliseString(g)}
-                                    </option>
-                                ))}
-                            </select>
-                            {inputErrors.link && (
-                                <p id="error">{inputErrors.link.join(",")}</p>
-                            )}
-                        </>
+            <div>
+                <label for="form-login.price">Price</label>
+                <input
+                    transition:persist
+                    type="text"
+                    name="price"
+                    autocomplete="transaction-amount"
+                />
+                {
+                    inputErrors.price && (
+                        <p id="error">{inputErrors.price.join(",")}</p>
                     )
-            }
+                }
+            </div>
+
+            <div>
+                {
+                    Astro.locals.user.groups &&
+                        Astro.locals.user.groups.length > 1 && (
+                            <>
+                                <label for="form-login.groups">Groups</label>
+                                <select
+                                    multiple
+                                    transition:persist
+                                    name="groups"
+                                    required
+                                >
+                                    {Groups.map((g) => (
+                                        <option value={g}>
+                                            {capitaliseString(g)}
+                                        </option>
+                                    ))}
+                                </select>
+                                {inputErrors.link && (
+                                    <p id="error">
+                                        {inputErrors.link.join(",")}
+                                    </p>
+                                )}
+                            </>
+                        )
+                }
+            </div>
 
             <button type="submit">Submit</button>
 
@@ -101,3 +78,17 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
         </form>
     </main>
 </Layout>
+
+<style>
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        > div,
+        > :global(astro-island > div) {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+</style>
