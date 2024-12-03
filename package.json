@@ -4,26 +4,26 @@
     "version": "0.0.1",
     "scripts": {
         "dev": "astro dev",
-        "start": "astro dev",
+        "start": "deno run ./dist/server/entry.mjs",
         "build": "astro check && astro build",
         "preview": "astro preview",
         "astro": "astro"
     },
     "dependencies": {
         "@astrojs/check": "^0.9.4",
-        "@astrojs/svelte": "^6.0.2",
+        "@astrojs/svelte": "^7.0.1",
         "@deno/astro-adapter": "^0.1.5",
         "@neondatabase/serverless": "^0.10.4",
         "@node-rs/argon2": "^2.0.0",
         "@oslojs/crypto": "^1.0.1",
         "@oslojs/encoding": "^1.1.0",
-        "astro": "^4.16.16",
+        "astro": "^5.0.1",
         "astro-icon": "^1.1.4",
-        "drizzle-orm": "^0.36.4",
+        "drizzle-orm": "^0.37.0",
         "nanoid": "^5.0.9",
         "open-graph-scraper-lite": "^2.1.0",
         "open-props": "^1.7.7",
-        "svelte": "^5.2.11",
+        "svelte": "^5.5.2",
         "typescript": "^5.7.2"
     },
     "devDependencies": {

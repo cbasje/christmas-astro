@@ -14,9 +14,6 @@ export default defineConfig({
             external: ["@node-rs/argon2"],
         },
     }),
-    security: {
-        checkOrigin: true,
-    },
 
     integrations: [
         icon({
@@ -50,14 +47,12 @@ export default defineConfig({
         },
     },
 
-    experimental: {
-        env: {
-            schema: {
-                DATABASE_URL: envField.string({
-                    context: "server",
-                    access: "secret",
-                }),
-            },
+    env: {
+        schema: {
+            DATABASE_URL: envField.string({
+                context: "server",
+                access: "secret",
+            }),
         },
     },
 });
