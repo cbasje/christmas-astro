@@ -1,4 +1,3 @@
-import { z } from "astro:schema";
 import {
     integer,
     jsonb,
@@ -7,26 +6,7 @@ import {
     timestamp,
     varchar,
 } from "drizzle-orm/pg-core";
-
-export const Groups = ["BENJAMINS", "HAUGEN"] as const;
-export type Group = (typeof Groups)[number];
-
-export const UserSizesSchema = z.object({
-    simple: z.object({
-        top: z.string().optional(),
-        bottom: z.string().optional(),
-        shoe: z.string().optional(),
-    }),
-    advanced: z.object({
-        head: z.string().optional(),
-        sleeve: z.string().optional(),
-        chest: z.string().optional(),
-        waist: z.string().optional(),
-        hip: z.string().optional(),
-        inseam: z.string().optional(),
-    }),
-});
-export type UserSizes = z.infer<typeof UserSizesSchema>;
+import type { Group, UserSizes } from "../models";
 
 export const users = pgTable("users", {
     id: text("id").primaryKey().notNull(),

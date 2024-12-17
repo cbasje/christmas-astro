@@ -1,7 +1,7 @@
 ---
 import { actions } from "astro:actions";
 import { capitaliseString } from "@lib/utils";
-import type { Group } from "src/db/schema/auth";
+import type { Group } from "src/db/models";
 
 const { pathname } = Astro.url;
 const group = Astro.url.searchParams.get("group") as Group | null;

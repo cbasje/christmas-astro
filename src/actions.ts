@@ -12,7 +12,8 @@ import { createUser, getUserFromUsername } from "@lib/server/user";
 import { eq, sql } from "drizzle-orm";
 import ogs from "open-graph-scraper-lite";
 import { db } from "./db";
-import { Groups, UserSizesSchema, users } from "./db/schema/auth";
+import { Groups, UserSizesSchema } from "./db/models";
+import { users } from "./db/schema/auth";
 import { giftItems, ideas } from "./db/schema/gift-item";
 
 export const server = {

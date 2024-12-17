@@ -1,5 +1,6 @@
 import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { type Group, users } from "./auth";
+import type { Group } from "../models";
+import { users } from "./auth";
 
 export const giftItems = pgTable("gift_items", {
     id: text("id").primaryKey().notNull(),

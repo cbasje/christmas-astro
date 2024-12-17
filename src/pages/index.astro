@@ -1,9 +1,10 @@
 ---
 import { and, desc, eq, not, sql } from "drizzle-orm";
+import type { Group } from "src/db/models";
 import ItemRow from "../components/ItemRow.svelte";
 import Menu from "../components/Menu.astro";
 import { db } from "../db/index";
-import { type Group, users } from "../db/schema/auth";
+import { users } from "../db/schema/auth";
 import { giftItems } from "../db/schema/gift-item";
 import Layout from "../layouts/Layout.astro";
 import { jsonAggBuildObject } from "../lib/utils/drizzle/json";
