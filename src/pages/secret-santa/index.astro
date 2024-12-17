@@ -1,0 +1,150 @@
+---
+import { actions, isInputError } from "astro:actions";
+import { formatDate } from "@lib/date";
+import { and, eq, gte, sql } from "drizzle-orm";
+import { db } from "src/db";
+import { type Group, users } from "src/db/schema/auth";
+import { secretSantaPicks } from "src/db/schema/secret-santa-picks";
+import Menu from "../../components/Menu.astro";
+import Layout from "../../layouts/Layout.astro";
+
+if (Astro.locals.user === null || Astro.locals.session === null) {
+    return Astro.redirect("/login");
+}
+
+const group =
+    (Astro.url.searchParams.get("group") as Group) ??
+    Astro.locals.user.groups?.at(0);
+
+const people = await db
+    .select()
+    .from(users)
+    .where(sql<boolean>`${users.groups} ? ${group}`)
+    .orderBy(users.name);
+
+const [currentPick] = await db
+    .select({
+        deadline: secretSantaPicks.deadline,
+        outline: secretSantaPicks.outline,
+    })
+    .from(secretSantaPicks)
+    .where(
+        and(
+            eq(secretSantaPicks.group, group),
+            gte(secretSantaPicks.deadline, sql`NOW()`),
+        ),
+    )
+    .limit(1);
+
+const result = Astro.getActionResult(actions.drawSecretSanta);
+const inputErrors = isInputError(result?.error) ? result.error.fields : {};
+---
+
+<Layout title="Christmas">
+    <Menu transition:persist />
+
+    <main>
+        <h1>Secret Santa</h1>
+
+        <form method="POST" action={actions.drawSecretSanta}>
+            {
+                currentPick ? (
+                    <>
+                        <span>There is already a draw for {group} soon!</span>
+
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>Your pick</th>
+                                    <td>
+                                        {
+                                            people.find(
+                                                (p) =>
+                                                    p.id ===
+                                                    currentPick.outline[
+                                                        Astro.locals.user!.id
+                                                    ]
+                                            )?.name
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Deadline</th>
+                                    <td>{formatDate(currentPick.deadline)}</td>
+                                </tr>
+                                {/* <tr>
+                                    <th>Participants</th>
+                                    <td>
+                                        {people
+                                            .reduce((arr, p) => {
+                                                if (
+                                                    p.id in currentPick.outline
+                                                ) {
+                                                    return [
+                                                        ...arr,
+                                                        p.name ?? p.username,
+                                                    ];
+                                                }
+                                                return arr;
+                                            }, [] as string[])
+                                            .join(", ")}
+                                    </td>
+                                </tr> */}
+                            </tbody>
+                        </table>
+                    </>
+                ) : (
+                    <>
+                        <input type="hidden" name="group" value={group} />
+
+                        <input
+                            type="hidden"
+                            name="timezone"
+                            value={new Date().getTimezoneOffset()}
+                        />
+
+                        <div>
+                            <label for="deadline">Deadline date</label>
+                            <input
+                                id="deadline"
+                                type="datetime-local"
+                                name="deadline"
+                                value={`${new Date().getFullYear()}-12-25T19:30`}
+                                required
+                                aria-describedby="form-login.deadline-error"
+                            />
+                            {inputErrors.deadline && (
+                                <p id="form-login.deadline-error">
+                                    {inputErrors.deadline.join(",")}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label for="excludePeople">
+                                Do you want to exclude people?
+                            </label>
+                            <select
+                                id="excludePeople"
+                                name="excludePeople"
+                                multiple
+                                aria-describedby="form-login.excludePeople-error"
+                            >
+                                {people.map((p) => (
+                                    <option value={p.id}>{p.name}</option>
+                                ))}
+                            </select>
+                            {inputErrors.excludePeople && (
+                                <p id="form-login.excludePeople-error">
+                                    {inputErrors.excludePeople.join(",")}
+                                </p>
+                            )}
+                        </div>
+
+                        <button type="submit">Pick</button>
+                    </>
+                )
+            }
+        </form>
+    </main>
+</Layout>

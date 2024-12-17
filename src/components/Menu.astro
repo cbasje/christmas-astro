@@ -1,46 +1,41 @@
 ---
 import { actions } from "astro:actions";
 import { capitaliseString } from "@lib/utils";
-import type { Group } from "src/db/models";
+import type { Group } from "src/db/schema/auth";
 
 const { pathname } = Astro.url;
-const group = Astro.url.searchParams.get("group") as Group | null;
+const group =
+    (Astro.url.searchParams.get("group") as Group) ??
+    Astro.locals.user?.groups?.at(0);
 
 const possibleGroups = Astro.locals.user ? Astro.locals.user.groups : [];
+
+type Link = {
+    label: string;
+    path: `/${string}`;
+};
+const links: Link[] = [
+    { label: "Home", path: "/" },
+    { label: "Wish list", path: "/wish-list" },
+    { label: "Ideas", path: "/ideas" },
+    { label: "Size Chart", path: "/size-chart" },
+    { label: "Secret Santa", path: "/secret-santa" },
+];
 ---
 
 <ul>
-    <li>
-        <a href="/" aria-current={pathname === "/" ? "page" : undefined}>Home</a
-        >
-    </li>
-
-    <li>
-        <a
-            href="/wish-list"
-            aria-current={pathname === "/wish-list" ? "page" : undefined}
-        >
-            Wish list
-        </a>
-    </li>
-
-    <li>
-        <a
-            href="/ideas"
-            aria-current={pathname === "/ideas" ? "page" : undefined}
-        >
-            Ideas
-        </a>
-    </li>
-
-    <li>
-        <a
-            href="/size-chart"
-            aria-current={pathname === "/size-chart" ? "page" : undefined}
-        >
-            Size Chart
-        </a>
-    </li>
+    {
+        links.map((l) => (
+            <li>
+                <a
+                    href={l.path + "?group=" + group}
+                    aria-current={pathname === l.path ? "page" : undefined}
+                >
+                    {l.label}
+                </a>
+            </li>
+        ))
+    }
 
     {
         possibleGroups.length > 1 && (

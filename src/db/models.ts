@@ -1,8 +1,5 @@
 import { z } from "astro:schema";
 
-export const Groups = ["BENJAMINS", "HAUGEN"] as const;
-export type Group = (typeof Groups)[number];
-
 export const UserSizesSchema = z.object({
     simple: z.object({
         top: z.string().optional(),

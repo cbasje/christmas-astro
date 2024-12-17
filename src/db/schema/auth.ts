@@ -6,7 +6,10 @@ import {
     timestamp,
     varchar,
 } from "drizzle-orm/pg-core";
-import type { Group, UserSizes } from "../models";
+import type { UserSizes } from "../models";
+
+export const Groups = ["BENJAMINS", "HAUGEN"] as const;
+export type Group = (typeof Groups)[number];
 
 export const users = pgTable("users", {
     id: text().primaryKey().notNull(),

@@ -1,6 +1,6 @@
 ---
 import { and, eq, sql } from "drizzle-orm";
-import type { Group } from "src/db/models";
+import type { Group } from "src/db/schema/auth";
 import ItemRow from "../../components/ItemRow.svelte";
 import Menu from "../../components/Menu.astro";
 import { db } from "../../db";
@@ -11,7 +11,9 @@ if (Astro.locals.user === null || Astro.locals.session === null) {
     return Astro.redirect("/login");
 }
 
-const group = Astro.url.searchParams.get("group") as Group | null;
+const group =
+    (Astro.url.searchParams.get("group") as Group) ??
+    Astro.locals.user.groups?.at(0);
 
 const wishList = await db
     .select({
@@ -29,7 +31,7 @@ const wishList = await db
     .where(
         and(
             eq(giftItems.recipientId, Astro.locals.user.id),
-            sql<boolean>`${giftItems.groups} ? ${group ?? Astro.locals.user.groups?.at(0)}`,
+            sql<boolean>`${giftItems.groups} ? ${group}`,
         ),
     );
 ---

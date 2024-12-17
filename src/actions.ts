@@ -1,5 +1,4 @@
-import { ActionError, defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import SecretSanta from "@lib/secret-santa";
 import { verifyPasswordHash } from "@lib/server/password";
 import {
     createSession,
@@ -9,12 +8,15 @@ import {
     setSessionTokenCookie,
 } from "@lib/server/session";
 import { createUser, getUserFromUsername } from "@lib/server/user";
-import { eq, sql } from "drizzle-orm";
+import { ActionError, defineAction } from "astro:actions";
+import { z } from "astro:schema";
+import { and, eq, notInArray, sql } from "drizzle-orm";
 import ogs from "open-graph-scraper-lite";
 import { db } from "./db";
-import { Groups, UserSizesSchema } from "./db/models";
-import { users } from "./db/schema/auth";
+import { UserSizesSchema } from "./db/models";
+import { Groups, users } from "./db/schema/auth";
 import { giftItems, ideas } from "./db/schema/gift-item";
+import { secretSantaPicks } from "./db/schema/secret-santa-picks";
 
 export const server = {
     login: defineAction({
@@ -195,6 +197,43 @@ export const server = {
                     updatedAt: new Date(),
                 })
                 .where(eq(users.id, context.locals.user.id ?? ""));
+        },
+    }),
+
+    drawSecretSanta: defineAction({
+        accept: "form",
+        input: z.object({
+            group: z.enum(Groups),
+            timezone: z.number(),
+            deadline: z.coerce.date(),
+            excludePeople: z.string().array().optional(),
+        }),
+        handler: async (
+            { group, timezone, deadline, excludePeople },
+            context,
+        ) => {
+            if (!context.locals.user) return;
+
+            const people = await db
+                .select()
+                .from(users)
+                .where(
+                    and(
+                        sql<boolean>`${users.groups} ? ${group}`,
+                        excludePeople && excludePeople.length > 0
+                            ? notInArray(users.id, excludePeople)
+                            : undefined,
+                    ),
+                );
+
+            const generator = new SecretSanta(people);
+            const pairing = generator.generatePairings();
+
+            await db.insert(secretSantaPicks).values({
+                outline: Object.fromEntries(pairing.entries()),
+                deadline,
+                group,
+            });
         },
     }),
 };
