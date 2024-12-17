@@ -3,10 +3,10 @@ import type { Group } from "../models";
 import { users } from "./auth";
 
 export const giftItems = pgTable("gift_items", {
-    id: text("id").primaryKey().notNull(),
-    name: text("name").notNull(),
-    price: text("price"),
-    notes: text("notes"),
+    id: text().primaryKey().notNull(),
+    name: text().notNull(),
+    price: text(),
+    notes: text(),
     recipientId: text("recipient_id")
         .notNull()
         .references(() => users.id, {
@@ -17,31 +17,21 @@ export const giftItems = pgTable("gift_items", {
         onDelete: "set null",
         onUpdate: "cascade",
     }),
-    link: text("link"),
-    purchased: boolean("purchased").default(false).notNull(),
+    link: text(),
+    purchased: boolean().default(false).notNull(),
     ideaId: text("idea_link_id"),
-    groups: jsonb("groups").$type<Group[]>(),
+    groups: jsonb().$type<Group[]>(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// export const selectGiftItemSchema = createSelectSchema(giftItems);
 export type GiftItem = typeof giftItems.$inferSelect;
-
-// export const insertGiftItemSchema = createInsertSchema(giftItems, {
-//     id: (schema) => schema.id.uuid(),
-//     price: (schema) =>
-//         schema.price.regex(/(?:[$€])?\s?\d+(?:[,.]\d+)?/g, {
-//             message: "Price must consist of numbers with currency codes.",
-//         }),
-//     link: (schema) => schema.link.url(),
-// }).pick({ id: true });
 export type NewGiftItem = typeof giftItems.$inferInsert;
 
 export const ideas = pgTable("ideas", {
-    id: text("id").primaryKey().notNull(),
-    name: text("name").notNull(),
-    price: text("price"),
+    id: text().primaryKey().notNull(),
+    name: text().notNull(),
+    price: text(),
     recipientId: text("recipient_id")
         .notNull()
         .references(() => users.id, {
@@ -52,25 +42,15 @@ export const ideas = pgTable("ideas", {
         onDelete: "set null",
         onUpdate: "cascade",
     }),
-    link: text("link"),
+    link: text(),
     giftItemId: text("gift_item_id").references(() => giftItems.id, {
         onDelete: "set null",
         onUpdate: "cascade",
     }),
-    purchased: boolean("purchased").default(false).notNull(),
+    purchased: boolean().default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// export const selectIdeaSchema = createSelectSchema(ideas);
 export type Idea = typeof ideas.$inferSelect;
-
-// export const insertIdeaSchema = createInsertSchema(ideas, {
-//     id: (schema) => schema.id.uuid(),
-//     price: (schema) =>
-//         schema.price.regex(/(?:[$€])?\s?\d+(?:[,.]\d+)?/g, {
-//             message: "Price must consist of numbers with currency codes.",
-//         }),
-//     link: (schema) => schema.link.url(),
-// }).pick({ id: true });
 export type NewIdea = typeof ideas.$inferInsert;

@@ -9,13 +9,13 @@ import {
 import type { Group, UserSizes } from "../models";
 
 export const users = pgTable("users", {
-    id: text("id").primaryKey().notNull(),
-    name: text("name").unique(),
+    id: text().primaryKey().notNull(),
+    name: text().unique(),
     username: text("user_name").notNull().unique(),
     partnerId: text("partner_id"),
-    groups: jsonb("groups").notNull().$type<Group[]>(),
-    hue: integer("hue").default(145).notNull(),
-    sizes: jsonb("sizes").$type<UserSizes>(),
+    groups: jsonb().notNull().$type<Group[]>(),
+    hue: integer().default(145).notNull(),
+    sizes: jsonb().$type<UserSizes>(),
     hashedPassword: varchar("hashed_password", {
         length: 255,
     }),
@@ -23,16 +23,11 @@ export const users = pgTable("users", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// export const selectUserSchema = createSelectSchema(users);
 export type User = typeof users.$inferSelect;
-
-// export const insertUserSchema = createInsertSchema(users, {
-//     hue: (schema) => schema.id.min(0).max(360),
-// });
 export type NewUser = typeof users.$inferInsert;
 
 export const authSessions = pgTable("sessions", {
-    id: text("id").primaryKey().notNull(),
+    id: text().primaryKey().notNull(),
     userId: text("user_id")
         .notNull()
         .references(() => users.id, {
