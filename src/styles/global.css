@@ -3,17 +3,40 @@
 @import "open-props/fonts" layer(fonts);
 @import "./fonts.css" layer(fonts);
 
-@import "open-props/style" layer(reset);
 @import "open-props/normalize" layer(reset);
+@import "open-props/style" layer(style);
+@import "./hues.css" layer(style);
 
+@import "open-props/buttons" layer(components);
+@import "./buttons.css" layer(components);
 @import "./utils.css" layer(components);
 
+@layer reset {
+    :root {
+        --font-size-00: calc(0.5 * var(--font-size-1));
+        --font-size-0: calc(0.75 * var(--font-size-1));
+        --font-size-1: 1rem;
+        --font-size-2: calc(1.1 * var(--font-size-1));
+        --font-size-3: calc(1.25 * var(--font-size-1));
+        --font-size-4: calc(1.5 * var(--font-size-1));
+        --font-size-5: calc(2 * var(--font-size-1));
+        --font-size-6: calc(2.5 * var(--font-size-1));
+        --font-size-7: calc(3 * var(--font-size-1));
+        --font-size-8: calc(3.5 * var(--font-size-1));
+        --text-1: CanvasText;
+        --text-2: CanvasText;
+        --surface-1: Canvas;
+        --surface-2: ButtonFace;
+        --surface-3: ButtonFace;
+        --surface-4: ButtonFace;
+
+        --border-width: 2px;
+        --padding: var(--size-fluid-1);
+    }
+}
+
 body {
-    width: 100vw;
-    overflow-x: clip;
-    height: 100vh;
-    height: 100dvh;
-    padding-top: calc(var(--keyboard-height) + env(safe-area-inset-top, 0));
+    padding-top: env(safe-area-inset-top, 0);
     padding-right: env(safe-area-inset-right, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
     padding-left: env(safe-area-inset-left, 0);
@@ -28,10 +51,27 @@ h4,
 h5,
 h6 {
     font-family: "Departure Mono", var(--font-system-ui);
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
 }
-:where(span, p, ul, ol, dl, h6) {
-    font-size: var(--font-size-1);
+
+main {
+    padding: var(--size-relative-3);
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-relative-3);
+
+        > div,
+        > astro-island > div {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    details {
+        margin-bottom: var(--size-relative-3);
+    }
 }
 
 :where(

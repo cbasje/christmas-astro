@@ -41,6 +41,7 @@ const overview = await db
     .with(sq)
     .select({
         name: users.name,
+        hue: users.hue,
         items: jsonAggBuildObject(sq._.selectedFields),
     })
     .from(sq)
@@ -58,7 +59,7 @@ const overview = await db
         {
             overview.map((p) => (
                 <details>
-                    <summary>{p.name}</summary>
+                    <summary style={`--color-hue: ${p.hue};`}>{p.name}</summary>
 
                     <ul>
                         {p.items.map((i) => (
@@ -70,3 +71,15 @@ const overview = await db
         }
     </main>
 </Layout>
+
+<style>
+    details {
+        background: var(--surface-1);
+        border: var(--border-size-2) solid var(--surface-3);
+
+        summary {
+            color: white;
+            background-color: var(--color-5);
+        }
+    }
+</style>

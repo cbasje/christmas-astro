@@ -31,22 +31,26 @@ const onpaste = (async (e) => {
 </script>
 
 <div>
-    <label for="form-login.link">Paste link...</label>
+    <label for="form-wish-list-new.link">Link</label>
     <input
         type="text"
         inputmode="url"
         autocomplete="url"
         name="link"
         placeholder="www.example.com..."
+        aria-describedby="form-wish-list-new.link.description"
         {onpaste}
     />
+    <span id="form-wish-list-new.link.description"
+        >Paste a link to automatically fill in the information</span
+    >
     {#if inputErrors.link}
         <p id="error">{inputErrors.link.join(",")}</p>
     {/if}
 </div>
 
 <div>
-    <label for="form-login.name">Name</label>
+    <label for="form-wish-list-new.name">Name</label>
     <input
         type="text"
         name="name"
@@ -60,7 +64,7 @@ const onpaste = (async (e) => {
 </div>
 
 <div>
-    <label for="form-login.notes">Note</label>
+    <label for="form-wish-list-new.notes">Note</label>
     <textarea
         name="notes"
         value={preview?.ogDescription}

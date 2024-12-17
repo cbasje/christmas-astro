@@ -1,0 +1,31 @@
+:where(
+        .btn,
+        button,
+        input:is([type="button"], [type="submit"], [type="reset"])
+    ),
+:where(input[type="file"])::-webkit-file-upload-button,
+:where(input[type="file"])::file-selector-button {
+    --_size: 0.9rem;
+    --_bg: var(--surface-1);
+    box-shadow: none;
+    align-self: start;
+
+    &[aria-current="page"],
+    &[aria-selected="true"] {
+        --_bg: var(--surface-3);
+    }
+
+    &.destructive {
+        --_text: var(--red-6);
+        --_border: var(--red-3);
+    }
+    &.destructive:focus-visible {
+        outline-color: var(--red-6);
+    }
+    @media (prefers-color-scheme: dark) {
+        &.destructive {
+            --_text: var(--red-2);
+            --_border: var(--surface-3);
+        }
+    }
+}

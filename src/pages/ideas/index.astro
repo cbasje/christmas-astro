@@ -52,6 +52,7 @@ const ideaList = await db
     .with(sq)
     .select({
         name: users.name,
+        hue: users.hue,
         items: jsonAggBuildObject(sq._.selectedFields),
     })
     .from(sq)
@@ -69,7 +70,7 @@ const ideaList = await db
         {
             ideaList.map((p) => (
                 <details>
-                    <summary>{p.name}</summary>
+                    <summary style={`--color-hue: ${p.hue};`}>{p.name}</summary>
 
                     <ul>
                         {p.items.map((i) => (
@@ -81,3 +82,15 @@ const ideaList = await db
         }
     </main>
 </Layout>
+
+<style>
+    details {
+        background: var(--surface-1);
+        border: var(--border-size-2) solid var(--surface-3);
+
+        summary {
+            color: var(--color-12);
+            background-color: var(--color-1);
+        }
+    }
+</style>

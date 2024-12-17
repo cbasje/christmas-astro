@@ -1,6 +1,7 @@
 ---
 import { actions } from "astro:actions";
 import { capitaliseString } from "@lib/utils";
+import { Icon } from "astro-icon/components";
 import type { Group } from "src/db/schema/auth";
 
 const { pathname } = Astro.url;
@@ -13,53 +14,109 @@ const possibleGroups = Astro.locals.user ? Astro.locals.user.groups : [];
 type Link = {
     label: string;
     path: `/${string}`;
+    icon: string;
 };
 const links: Link[] = [
-    { label: "Home", path: "/" },
-    { label: "Wish list", path: "/wish-list" },
-    { label: "Ideas", path: "/ideas" },
-    { label: "Size Chart", path: "/size-chart" },
-    { label: "Secret Santa", path: "/secret-santa" },
+    { label: "Home", path: "/", icon: "home" },
+    { label: "Wish list", path: "/wish-list", icon: "list" },
+    { label: "Ideas", path: "/ideas", icon: "clipboard" },
+    { label: "Size Chart", path: "/size-chart", icon: "ruler" },
+    { label: "Secret Santa", path: "/secret-santa", icon: "gift" },
 ];
 ---
 
-<ul>
-    {
-        links.map((l) => (
-            <li>
-                <a
-                    href={l.path + "?group=" + group}
-                    aria-current={pathname === l.path ? "page" : undefined}
-                >
-                    {l.label}
-                </a>
-            </li>
-        ))
+<nav>
+    <ul class="primary">
+        {
+            links.map((l) => (
+                <li>
+                    <a
+                        href={l.path + "?group=" + group}
+                        aria-current={pathname === l.path ? "page" : undefined}
+                        class="btn"
+                    >
+                        <Icon name={l.icon} />
+                        <span>{l.label}</span>
+                    </a>
+                </li>
+            ))
+        }
+    </ul>
+
+    <ul class="secondary">
+        {
+            possibleGroups.length > 1 && (
+                <li>
+                    <div
+                        role="tablist"
+                        aria-label="Family/Friend group Tabs"
+                        style="display: contents;"
+                    >
+                        {possibleGroups.map((g) => {
+                            const href = Astro.url;
+                            href.searchParams.set("group", g);
+
+                            return (
+                                <a
+                                    href={href}
+                                    role="tab"
+                                    aria-selected={group === g}
+                                    class="btn"
+                                >
+                                    {capitaliseString(g)}
+                                </a>
+                            );
+                        })}
+                    </div>
+                </li>
+            )
+        }
+
+        <li>
+            <form method="POST" action={"/login" + actions.logout}>
+                <button type="submit" class="destructive">
+                    <span>Sign out</span>
+                    <Icon name="logout" />
+                </button>
+            </form>
+        </li>
+    </ul>
+</nav>
+
+<style>
+    nav {
+        display: grid;
+        grid-template-columns:
+            [primary-start] auto [primary-end]
+            1fr
+            [secondary-start] auto [secondary-end];
+        padding: var(--size-relative-3);
+
+        position: sticky;
+        top: 0;
+        inset-inline: 0;
+        z-index: 9999;
+
+        background-color: var(--surface-1);
+
+        ul {
+            padding: 0;
+            list-style: none;
+
+            display: flex;
+            flex-direction: row;
+            gap: var(--size-relative-2);
+
+            li {
+                display: contents;
+            }
+
+            &.primary {
+                grid-column: primary;
+            }
+            &.secondary {
+                grid-column: secondary;
+            }
+        }
     }
-
-    {
-        possibleGroups.length > 1 && (
-            <li>
-                {possibleGroups.map((g) => {
-                    const href = Astro.url;
-                    href.searchParams.set("group", g);
-
-                    return (
-                        <a
-                            href={href}
-                            aria-current={group === g ? "page" : undefined}
-                        >
-                            {capitaliseString(g)}
-                        </a>
-                    );
-                })}
-            </li>
-        )
-    }
-
-    <li>
-        <form method="POST" action={"/login" + actions.logout}>
-            <button type="submit">Sign out</button>
-        </form>
-    </li>
-</ul>
+</style>
