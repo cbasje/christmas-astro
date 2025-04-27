@@ -1,4 +1,4 @@
-FROM denoland/deno:2.0.6
+FROM denoland/deno:latest
 WORKDIR /app
 
 COPY . .
@@ -9,4 +9,4 @@ RUN deno cache dist/server/entry.mjs
 USER deno
 EXPOSE 3000
 
-CMD ["run", "--allow-net", "--allow-read", "--allow-env", "--allow-ffi", "dist/server/entry.mjs"]
+CMD ["run", "-A", "dist/server/entry.mjs"]
