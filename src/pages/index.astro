@@ -33,9 +33,9 @@ const sq = db.$with("sq").as(
         .where(
             and(
                 not(eq(giftItems.recipientId, Astro.locals.user.id)),
-                sql<boolean>`${giftItems.groups} ? ${group}`,
-            ),
-        ),
+                sql<boolean>`${giftItems.groups} ? ${group}`
+            )
+        )
 );
 const overview = await db
     .with(sq)
