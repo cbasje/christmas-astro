@@ -6,53 +6,57 @@ import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
-    output: "server",
-    adapter: deno({
-        hostname: "0.0.0.0",
-        port: 3000,
-        esbuild: {
-            external: ["@node-rs/argon2"],
-        },
+  output: "server",
+  adapter: deno({
+    hostname: "0.0.0.0",
+    port: 3000,
+    start: true,
+    esbuild: {
+      external: ["@node-rs/argon2"],
+    },
+  }),
+
+  integrations: [
+    icon({
+      svgoOptions: {
+        plugins: [
+          {
+            name: "convertColors",
+            params: {
+              currentColor: true,
+            },
+          },
+        ],
+      },
     }),
+    svelte(),
+  ],
 
-    integrations: [
-        icon({
-            svgoOptions: {
-                plugins: [
-                    {
-                        name: "convertColors",
-                        params: {
-                            currentColor: true,
-                        },
-                    },
-                ],
-            },
-        }),
-        svelte(),
-    ],
+  site: "https://christmas-astro.benjami.in",
+  security: {
+    checkOrigin: false,
+  },
 
-    site: "https://christmas.benjami.in",
-
-    vite: {
-        css: {
-            transformer: "lightningcss",
-            lightningcss: {
-                drafts: {
-                    customMedia: true,
-                },
-            },
+  vite: {
+    css: {
+      transformer: "lightningcss",
+      lightningcss: {
+        drafts: {
+          customMedia: true,
         },
-        build: {
-            cssMinify: "lightningcss",
-        },
+      },
     },
-
-    env: {
-        schema: {
-            DATABASE_URL: envField.string({
-                context: "server",
-                access: "secret",
-            }),
-        },
+    build: {
+      cssMinify: "lightningcss",
     },
+  },
+
+  env: {
+    schema: {
+      DATABASE_URL: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+    },
+  },
 });
