@@ -63,19 +63,4 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
         <a href="/signup">Create an account</a>
         <a href="/forgot-password">Forgot password?</a>
     </main>
-
-
-    <script>
-      import { actions } from 'astro:actions';
-      import { navigate } from 'astro:transitions/client';
-
-      const form = document.querySelector('form');
-      form?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const formData = new FormData(form);
-        const { error } = await actions.login(formData);
-        console.error(error);
-        if (!error) navigate('/');
-      })
-    </script>
 </Layout>
